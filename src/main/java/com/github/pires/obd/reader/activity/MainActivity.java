@@ -45,6 +45,7 @@ import com.github.pires.obd.enums.AvailableCommandNames;
 import com.github.pires.obd.reader.R;
 import com.github.pires.obd.reader.config.ObdConfig;
 import com.github.pires.obd.reader.io.AbstractGatewayService;
+import com.github.pires.obd.reader.io.AccelerometerManager;
 import com.github.pires.obd.reader.io.LogCSVWriter;
 import com.github.pires.obd.reader.io.MockObdGatewayService;
 import com.github.pires.obd.reader.io.ObdCommandJob;
@@ -108,6 +109,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
     /// the trip log
     private TripLog triplog;
     private TripRecord currentTrip;
+    private AccelerometerManager accelerometerManager;
 
     @InjectView(R.id.compass_text)
     private TextView compass;
@@ -187,6 +189,12 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
                     Map<String, String> temp = new HashMap<String, String>();
                     temp.putAll(commandResult);
                     ObdReading reading = new ObdReading(lat, lon, alt, System.currentTimeMillis(), vin, temp);
+                    if (accelerometerManager.values.length == 3) {
+                        reading.setAccelX(accelerometerManager.values[0]);
+                        reading.setAccelY(accelerometerManager.values[1]);
+                        reading.setAccelZ(accelerometerManager.values[2]);
+                    }
+
                     new UploadAsyncTask().execute(reading);
 
                 } else if (prefs.getBoolean(ConfigActivity.ENABLE_FULL_LOGGING_KEY, false)) {
@@ -338,6 +346,7 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
         triplog = TripLog.getInstance(this.getApplicationContext());
         
         obdStatusTextView.setText(getString(R.string.status_obd_disconnected));
+        accelerometerManager = new AccelerometerManager((SensorManager) getSystemService(SENSOR_SERVICE));
     }
 
     @Override
@@ -407,6 +416,8 @@ public class MainActivity extends RoboActivity implements ObdProgressListener, L
         } else {
             btStatusTextView.setText(getString(R.string.status_bluetooth_ok));
         }
+
+        accelerometerManager.start();
     }
 
     private void updateConfig() {

@@ -20,7 +20,37 @@ import java.util.Map;
  * DTO for OBD readings.
  */
 public class ObdReading {
-    private double latitude, longitude, altitude;
+    private double latitude;
+    private double longitude;
+    private double altitude;
+    private double accelX;
+    private double accelY;
+
+    public double getAccelX() {
+        return accelX;
+    }
+
+    public void setAccelX(double accelX) {
+        this.accelX = accelX;
+    }
+
+    public double getAccelY() {
+        return accelY;
+    }
+
+    public void setAccelY(double accelY) {
+        this.accelY = accelY;
+    }
+
+    public double getAccelZ() {
+        return accelZ;
+    }
+
+    public void setAccelZ(double accelZ) {
+        this.accelZ = accelZ;
+    }
+
+    private double accelZ;
     private long timestamp;
     private String vin; // vehicle id
     private Map<String, String> readings;
